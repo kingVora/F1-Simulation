@@ -1,0 +1,13 @@
+# Maven / Gradle
+/target/
+*.class
+*.jar
+*.war
+
+# IntelliJ IDEA
+*.iml
+/.idea/
+/out/
+
+# Environment / secrets
+.env
