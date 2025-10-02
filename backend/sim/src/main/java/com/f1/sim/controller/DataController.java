@@ -1,7 +1,9 @@
 package com.f1.sim.controller;
 
 import com.f1.sim.dto.DriverDTO;
+import com.f1.sim.dto.SessionDTO;
 import com.f1.sim.models.Driver;
+import com.f1.sim.models.Session;
 import com.f1.sim.service.DataService;
 import com.f1.sim.service.OpenF1Client;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +32,12 @@ public class DataController {
         List<DriverDTO> drivers = openF1Client.fetchDrivers();
         dataService.addDriverData(drivers);
         return ResponseEntity.ok("Drivers imported successfully!");
+    }
+
+    @GetMapping("/sessions")
+    public ResponseEntity<String> importSessions(){
+        List<SessionDTO> sessions = openF1Client.fetchSessions();
+        dataService.addSessionData(sessions);
+        return ResponseEntity.ok("Sessions imported sucessfully!");
     }
 }
