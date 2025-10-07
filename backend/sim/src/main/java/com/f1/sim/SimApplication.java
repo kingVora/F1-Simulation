@@ -13,11 +13,8 @@ public class SimApplication {
 
 	public static void main(String[] args) {
 		String projectRoot = Paths.get(System.getProperty("user.dir")).toString();
-		System.out.println(projectRoot);
 		Path envPath = Paths.get(projectRoot, ".env");
-		System.out.println("Exists: " + Files.exists(envPath));
 		Dotenv dotenv = Dotenv.configure().directory(projectRoot).ignoreIfMissing().load();
-		System.out.println(dotenv.get("DB_URL"));
 		System.setProperty("DB_URL", dotenv.get("DB_URL"));
 		System.setProperty("DB_USER", dotenv.get("DB_USER"));
 		System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));

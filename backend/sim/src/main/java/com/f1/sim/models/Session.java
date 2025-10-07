@@ -169,6 +169,7 @@ public class Session {
         this.year = year;
     }
 
+    // Runs a query to fetch all results that have the session key.
     public List<Result> getResults() {
         return results;
     }
@@ -194,7 +195,6 @@ public class Session {
                 ", dateEnd=" + dateEnd +
                 ", gmtOffset='" + gmtOffset + '\'' +
                 ", year=" + year +
-                ", results=" + results +
                 '}';
     }
 }

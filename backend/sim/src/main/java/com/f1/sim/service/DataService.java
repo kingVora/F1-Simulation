@@ -1,11 +1,11 @@
 package com.f1.sim.service;
 
 import com.f1.sim.dto.DriverDTO;
+import com.f1.sim.dto.ResultDTO;
 import com.f1.sim.dto.SessionDTO;
-import com.f1.sim.models.Driver;
-import com.f1.sim.models.Session;
-import com.f1.sim.repository.DriverRepository;
-import com.f1.sim.repository.SessionRepository;
+import com.f1.sim.dto.WeatherDTO;
+import com.f1.sim.models.*;
+import com.f1.sim.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,15 @@ public class DataService {
 
     @Autowired
     private SessionRepository sessionRepository;
+
+    @Autowired
+    private ResultRepository resultRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
+
+    @Autowired
+    private QualifyingRepository qualifyingRepository;
 
     public void addDriverData(List<DriverDTO> drivers) {
         Set<String> driverNames = new HashSet<>();
@@ -51,6 +60,23 @@ public class DataService {
             sessions.add(session);
         }
         sessionRepository.saveAll(sessions);
+    }
+
+    public void addResultData(List<ResultDTO> resultDTOS){
+        resultDTOS.forEach(System.out::println);
+        for(ResultDTO resultDTO : resultDTOS){
+            Result result = getResult(resultDTO);
+            System.out.println(result);
+        }
+    }
+
+    public void addWeatherData(List<WeatherDTO> weatherDTOs) {
+//        weatherDTOs.forEach(System.out::println);
+//        List<Weather> weather = new ArrayList<>();
+//        for(WeatherDTO weatherDTO: weatherDTOs){
+//            Weather weather1 = getWeather(weatherDTO);
+//            System.out.println(weather1);
+//        }
     }
 
     private Driver getDriver(DriverDTO driverDTO) {
@@ -90,4 +116,81 @@ public class DataService {
         System.out.println(session);
         return session;
     }
+
+    private Result getResult(ResultDTO resultDTO){
+        System.out.println("Driver number: " + resultDTO.getDriverNumber());
+        Driver driver = driverRepository.findByDriverNumber(resultDTO.getDriverNumber());
+        if(driver == null)
+            return null;
+        Result result = new Result();
+        result.setPosition(resultDTO.getPosition());
+        result.setNumberOfLaps(resultDTO.getNumberOfLaps());
+        result.setPoints(resultDTO.getPoints());
+        result.setDnf(resultDTO.getDnf());
+        result.setDns(resultDTO.getDns());
+        result.setDsq(resultDTO.getDsq());
+
+        Session session = sessionRepository.findBySessionKey(resultDTO.getSessionKey());
+        result.setSession(session);
+
+        result.setDriver(driver);
+
+        Team team = teamRepository.findByTeamName(driver.getTeam());
+        result.setTeam(team);
+
+        List<QualifyingDuration> qdList = new ArrayList<>();
+        if(resultDTO.getDuration() instanceof List<?> durations && resultDTO.getGapToLeader() instanceof List<?> gaps){
+            int segment = 1;
+            for(int i=0; i<durations.size(); i++){
+                QualifyingDuration qd = new QualifyingDuration();
+                qd.setSegmentNumber(segment++);
+
+                Object d =durations.get(i);
+                qd.setDuration(getDurationOrGap(d));
+
+                if(i<gaps.size()){
+                    Object g = gaps.get(i);
+                    System.out.println("Gap: " + g);
+                    qd.setGapToLeader(getDurationOrGap(g));
+                } else {
+                    qd.setGapToLeader(null);
+                }
+                qd.setResult(result);
+                System.out.println("-----------------");
+                System.out.println(qd);
+                qdList.add(qd);
+            }
+        } else {
+            Object d = resultDTO.getDuration();
+            Object g = resultDTO.getGapToLeader();
+            result.setDuration(getDurationOrGap(d));
+            result.setGapToLeader(getDurationOrGap(g));
+        }
+        resultRepository.save(result);
+        if(!qdList.isEmpty())
+            qualifyingRepository.saveAll(qdList);
+        return result;
+    }
+
+    private Double getDurationOrGap(Object val){
+        if (val instanceof Number){
+            return ((Number) val).doubleValue();
+        } else {
+            return null;
+        }
+    }
+
+//    private Weather getWeather(WeatherDTO weatherDTO){
+//        Weather weather = new Weather();
+
+//        weather.setAirTemperature(dto.getAirTemperature());
+//        weather.setRecordedAt(OffsetDateTime.parse(dto.getDate(), ISO_FORMATTER));
+//        weather.setHumidity(dto.getHumidity());
+//        weather.setPressure(dto.getPressure());
+//        weather.setRainfall(dto.getRainfall());
+//        weather.setTrackTemperature(dto.getTrackTemperature());
+//        weather.setWindDirection(dto.getWindDirection());
+//        weather.setWindSpeed(dto.getWindSpeed());
+//        weather.setMeetingKey(dto.getMeetingKey());
+//    }
 }
