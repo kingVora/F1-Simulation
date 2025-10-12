@@ -1,10 +1,8 @@
 package com.f1.sim.controller;
 
-import com.f1.sim.dto.DriverDTO;
-import com.f1.sim.dto.ResultDTO;
-import com.f1.sim.dto.SessionDTO;
-import com.f1.sim.dto.WeatherDTO;
+import com.f1.sim.dto.*;
 import com.f1.sim.models.Session;
+import com.f1.sim.models.Stint;
 import com.f1.sim.repository.SessionRepository;
 import com.f1.sim.service.DataService;
 import com.f1.sim.service.OpenF1Client;
@@ -46,9 +44,7 @@ public class DataController {
     @GetMapping("/results")
     public ResponseEntity<String> importResults() {
         List<Session> sessions = sessionRepository.findAll();
-        System.out.println("Results");
         for(Session session: sessions){
-            System.out.println("Session: " + session.getSessionKey());
             List<ResultDTO> results = openF1Client.fetchResults(session.getSessionKey());
             dataService.addResultData(results);
 
@@ -57,9 +53,20 @@ public class DataController {
     }
 
     @GetMapping("/weather")
-    public ResponseEntity<String> importWeather(){
-        List<WeatherDTO> weather = openF1Client.fetchWeather();
-        dataService.addWeatherData(weather);
+    public ResponseEntity<String> importWeather() throws InterruptedException {
+        List<Session> sessions = sessionRepository.findAll();
+        for(Session session: sessions){
+            Thread.sleep(2000);
+            List<WeatherDTO> weather = openF1Client.fetchWeather(session.getSessionKey());
+            dataService.addWeatherData(weather);
+        }
         return ResponseEntity.ok("Weather data imported successfully!");
+    }
+
+    @GetMapping("/stints")
+    public ResponseEntity<String> importStint(){
+        List<StintDTO> stint = openF1Client.fetchStints();
+        dataService.addStintData(stint);
+        return ResponseEntity.ok("Stint data imported successfully!");
     }
 }

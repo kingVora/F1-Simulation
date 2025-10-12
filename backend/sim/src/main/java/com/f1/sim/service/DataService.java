@@ -1,9 +1,6 @@
 package com.f1.sim.service;
 
-import com.f1.sim.dto.DriverDTO;
-import com.f1.sim.dto.ResultDTO;
-import com.f1.sim.dto.SessionDTO;
-import com.f1.sim.dto.WeatherDTO;
+import com.f1.sim.dto.*;
 import com.f1.sim.models.*;
 import com.f1.sim.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +29,12 @@ public class DataService {
 
     @Autowired
     private QualifyingRepository qualifyingRepository;
+
+    @Autowired
+    private WeatherRepository weatherRepository;
+
+    @Autowired
+    private StintRepository stintRepository;
 
     public void addDriverData(List<DriverDTO> drivers) {
         Set<String> driverNames = new HashSet<>();
@@ -71,13 +74,25 @@ public class DataService {
     }
 
     public void addWeatherData(List<WeatherDTO> weatherDTOs) {
-//        weatherDTOs.forEach(System.out::println);
-//        List<Weather> weather = new ArrayList<>();
-//        for(WeatherDTO weatherDTO: weatherDTOs){
-//            Weather weather1 = getWeather(weatherDTO);
-//            System.out.println(weather1);
-//        }
+        weatherDTOs.forEach(System.out::println);
+        List<Weather> weather = new ArrayList<>();
+        int count = 0;
+        for(WeatherDTO weatherDTO: weatherDTOs){
+            if(++count%5!=0) continue;
+            Weather weather1 = getWeather(weatherDTO);
+            System.out.println(weather1);
+            weather.add(weather1);
+        }
+        weatherRepository.saveAll(weather);
     }
+
+    public void addStintData(List<StintDTO> stintDTOs) {
+       for(StintDTO stintDTO: stintDTOs){
+           Stint stint = getStint(stintDTO);
+           System.out.println(stint);
+       }
+    }
+
 
     private Driver getDriver(DriverDTO driverDTO) {
         Driver driver = new Driver();
@@ -180,17 +195,41 @@ public class DataService {
         }
     }
 
-//    private Weather getWeather(WeatherDTO weatherDTO){
-//        Weather weather = new Weather();
+    private Weather getWeather(WeatherDTO weatherDTO){
+        Weather weather = new Weather();
 
-//        weather.setAirTemperature(dto.getAirTemperature());
-//        weather.setRecordedAt(OffsetDateTime.parse(dto.getDate(), ISO_FORMATTER));
-//        weather.setHumidity(dto.getHumidity());
-//        weather.setPressure(dto.getPressure());
-//        weather.setRainfall(dto.getRainfall());
-//        weather.setTrackTemperature(dto.getTrackTemperature());
-//        weather.setWindDirection(dto.getWindDirection());
-//        weather.setWindSpeed(dto.getWindSpeed());
-//        weather.setMeetingKey(dto.getMeetingKey());
-//    }
+        weather.setMeetingKey(weatherDTO.getMeetingKey());
+        weather.setSessionKey(weatherDTO.getSessionKey());
+        weather.setDate(weatherDTO.getDate());
+        weather.setAirTemperature(weatherDTO.getAirTemperature());
+        weather.setTrackTemperature(weatherDTO.getTrackTemperature());
+        weather.setHumidity(weatherDTO.getHumidity());
+        weather.setPressure(weatherDTO.getPressure());
+        weather.setRainfall(weatherDTO.getRainfall());
+        weather.setWindSpeed(weatherDTO.getWindSpeed());
+        weather.setWindDirection(weatherDTO.getWindDirection());
+
+        return weather;
+    }
+
+    private Stint getStint(StintDTO stintDTO) {
+        Driver driver = driverRepository.findByDriverNumber(stintDTO.getDriverNumber());
+        Session session = sessionRepository.findBySessionKey(stintDTO.getSessionKey());
+        if(driver == null || session==null)
+            return null;
+
+        Stint stint = new Stint();
+
+        stint.setStintNumber(stintDTO.getStintNumber());
+        stint.setCompound(stintDTO.getCompound());
+        stint.setLapStart(stintDTO.getLapStart());
+        stint.setLapEnd(stintDTO.getLapEnd());
+        stint.setTyreAgeAtStart(stintDTO.getTyreAgeAtStart());
+        stint.setDriver(driver);
+        stint.setSession(session);
+
+        stintRepository.save(stint);
+        return stint;
+    }
+
 }

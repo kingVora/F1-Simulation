@@ -1,9 +1,6 @@
 package com.f1.sim.service;
 
-import com.f1.sim.dto.DriverDTO;
-import com.f1.sim.dto.ResultDTO;
-import com.f1.sim.dto.SessionDTO;
-import com.f1.sim.dto.WeatherDTO;
+import com.f1.sim.dto.*;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,10 +39,15 @@ public class OpenF1Client {
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
-    public List<WeatherDTO> fetchWeather(){
-        String url = OPENF1_BASE_URL + "weather";
+    public List<WeatherDTO> fetchWeather(Integer sessionKey){
+        String url = OPENF1_BASE_URL + "/weather?session_key=" + sessionKey;
         ResponseEntity<WeatherDTO[]> response = restTemplate.getForEntity(url, WeatherDTO[].class);
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
+    public List<StintDTO> fetchStints(){
+        String url = OPENF1_BASE_URL + "/stints";
+        ResponseEntity<StintDTO[]> response = restTemplate.getForEntity(url, StintDTO[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+    }
 }
