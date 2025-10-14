@@ -69,4 +69,14 @@ public class DataController {
         dataService.addStintData(stint);
         return ResponseEntity.ok("Stint data imported successfully!");
     }
+
+    @GetMapping("/laps")
+    public ResponseEntity<String> importLaps(){
+        List<Session> sessions = sessionRepository.findAll();
+        for(Session session: sessions){
+            List<LapDTO> laps = openF1Client.fetchLaps(session.getSessionKey());
+            dataService.addLapData(laps);
+        }
+        return ResponseEntity.ok("Lap data imported successfully!");
+    }
 }

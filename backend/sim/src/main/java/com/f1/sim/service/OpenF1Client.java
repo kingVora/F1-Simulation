@@ -50,4 +50,10 @@ public class OpenF1Client {
         ResponseEntity<StintDTO[]> response = restTemplate.getForEntity(url, StintDTO[].class);
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
+
+    public List<LapDTO> fetchLaps(Integer sessionKey){
+        String url =  OPENF1_BASE_URL + "/laps?session_key=" + sessionKey;
+        ResponseEntity<LapDTO[]> response = restTemplate.getForEntity(url,LapDTO[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+    }
 }

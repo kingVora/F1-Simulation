@@ -36,6 +36,9 @@ public class DataService {
     @Autowired
     private StintRepository stintRepository;
 
+    @Autowired
+    private LapRepository lapRepository;
+
     public void addDriverData(List<DriverDTO> drivers) {
         Set<String> driverNames = new HashSet<>();
         List<Driver> driverList = new ArrayList<>();
@@ -91,6 +94,13 @@ public class DataService {
            Stint stint = getStint(stintDTO);
            System.out.println(stint);
        }
+    }
+
+    public void addLapData(List<LapDTO> lapDTOS){
+        for(LapDTO lapDTO: lapDTOS){
+            Lap lap = getLap(lapDTO);
+            System.out.println(lap);
+        }
     }
 
 
@@ -230,6 +240,32 @@ public class DataService {
 
         stintRepository.save(stint);
         return stint;
+    }
+
+    private Lap getLap(LapDTO lapDTO){
+        Driver driver = driverRepository.findByDriverNumber(lapDTO.getDriverNumber());
+        if(driver == null)
+            return null;
+
+        Lap lap = new Lap();
+
+        lap.setDriver(driver);
+        lap.setLapNumber(lapDTO.getLapNumber());
+        lap.setLapDuration(lapDTO.getLapDuration());
+        lap.setDurationSector1(lapDTO.getDurationSector1());
+        lap.setDurationSector2(lapDTO.getDurationSector2());
+        lap.setDurationSector3(lapDTO.getDurationSector3());
+        lap.setI1Speed(lapDTO.getI1Speed());
+        lap.setI2Speed(lapDTO.getI2Speed());
+        lap.setStSpeed(lapDTO.getStSpeed());
+        lap.setPitOutLap(lapDTO.getPitOutLap());
+        lap.setDateStart(lapDTO.getDateStart());
+
+        Session session = sessionRepository.findBySessionKey(lapDTO.getSessionKey());
+        lap.setSession(session);
+
+        lapRepository.save(lap);
+        return lap;
     }
 
 }

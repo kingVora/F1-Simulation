@@ -1,9 +1,9 @@
 package com.f1.sim.repository;
 
-import com.f1.sim.models.Weather;
+import com.f1.sim.models.Lap;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WeatherRepository extends JpaRepository<Weather,Integer> {
+public interface LapRepository extends JpaRepository<Lap,Integer> {
 }
