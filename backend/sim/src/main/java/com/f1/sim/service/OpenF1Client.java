@@ -56,4 +56,16 @@ public class OpenF1Client {
         ResponseEntity<LapDTO[]> response = restTemplate.getForEntity(url,LapDTO[].class);
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
+
+    public List<MeetingDTO> fetchMeetings(){
+        String url = OPENF1_BASE_URL + "/meetings";
+        ResponseEntity<MeetingDTO[]> response = restTemplate.getForEntity(url,MeetingDTO[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+    }
+
+    public List<PositionDTO> fetchPositions(Integer sessionKey){
+        String url =  OPENF1_BASE_URL + "/position?session_key=" + sessionKey;
+        ResponseEntity<PositionDTO[]> response = restTemplate.getForEntity(url,PositionDTO[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+    }
 }

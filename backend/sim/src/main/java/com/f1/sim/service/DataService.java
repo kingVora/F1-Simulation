@@ -15,29 +15,31 @@ import java.util.Set;
 @Service
 public class DataService {
 
-    @Autowired
     private DriverRepository driverRepository;
-
-    @Autowired
     private SessionRepository sessionRepository;
-
-    @Autowired
     private ResultRepository resultRepository;
-
-    @Autowired
     private TeamRepository teamRepository;
-
-    @Autowired
     private QualifyingRepository qualifyingRepository;
-
-    @Autowired
     private WeatherRepository weatherRepository;
-
-    @Autowired
     private StintRepository stintRepository;
-
-    @Autowired
     private LapRepository lapRepository;
+    private MeetingRepository meetingRepository;
+    private PositionRepository positionRepository;
+
+    public DataService(DriverRepository driverRepository, SessionRepository sessionRepository, ResultRepository resultRepository, TeamRepository teamRepository,
+                       QualifyingRepository qualifyingRepository, WeatherRepository weatherRepository, StintRepository stintRepository, LapRepository lapRepository, MeetingRepository meetingRepository,
+                       PositionRepository positionRepository) {
+        this.driverRepository = driverRepository;
+        this.sessionRepository = sessionRepository;
+        this.resultRepository = resultRepository;
+        this.teamRepository = teamRepository;
+        this.qualifyingRepository = qualifyingRepository;
+        this.weatherRepository = weatherRepository;
+        this.stintRepository = stintRepository;
+        this.lapRepository = lapRepository;
+        this.meetingRepository = meetingRepository;
+        this.positionRepository = positionRepository;
+    }
 
     public void addDriverData(List<DriverDTO> drivers) {
         Set<String> driverNames = new HashSet<>();
@@ -100,6 +102,18 @@ public class DataService {
         for(LapDTO lapDTO: lapDTOS){
             Lap lap = getLap(lapDTO);
             System.out.println(lap);
+        }
+    }
+
+    public void addMeetingData(List<MeetingDTO> meetingDTOS){
+        for(MeetingDTO meetingDTO: meetingDTOS){
+            getMeeting(meetingDTO);
+        }
+    }
+
+    public void addPositionData(List<PositionDTO> positionDTOS){
+        for(PositionDTO positionDTO: positionDTOS){
+            getPosition(positionDTO);
         }
     }
 
@@ -266,6 +280,44 @@ public class DataService {
 
         lapRepository.save(lap);
         return lap;
+    }
+
+    private void getMeeting(MeetingDTO dto){
+        Meeting meeting = new Meeting();
+
+        meeting.setMeetingKey(dto.getMeetingKey());
+        meeting.setMeetingName(dto.getMeetingName());
+        meeting.setMeetingOfficialName(dto.getMeetingOfficialName());
+        meeting.setYear(dto.getYear());
+        meeting.setCircuitKey(dto.getCircuitKey());
+        meeting.setCircuitShortName(dto.getCircuitShortName());
+        meeting.setCountryCode(dto.getCountryCode());
+        meeting.setCountryKey(dto.getCountryKey());
+        meeting.setCountryName(dto.getCountryName());
+        meeting.setDateStart(dto.getDateStart());
+        meeting.setGmtOffset(dto.getGmtOffset());
+        meeting.setLocation(dto.getLocation());
+
+        System.out.println(meeting);
+        meetingRepository.save(meeting);
+
+    }
+
+    private void getPosition(PositionDTO dto){
+        Position position = new Position();
+
+        Driver driver = driverRepository.findByDriverNumber(dto.getDriverNumber());
+        if(driver == null)
+            return;
+
+        position.setDate(dto.getDate());
+        position.setDriverNumber(dto.getDriverNumber());
+        position.setMeetingKey(dto.getMeetingKey());
+        position.setPosition(dto.getPosition());
+        position.setSessionKey(dto.getSessionKey());
+
+        System.out.println(position);
+        positionRepository.save(position);
     }
 
 }

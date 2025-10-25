@@ -2,7 +2,6 @@ package com.f1.sim.controller;
 
 import com.f1.sim.dto.*;
 import com.f1.sim.models.Session;
-import com.f1.sim.models.Stint;
 import com.f1.sim.repository.SessionRepository;
 import com.f1.sim.service.DataService;
 import com.f1.sim.service.OpenF1Client;
@@ -79,4 +78,22 @@ public class DataController {
         }
         return ResponseEntity.ok("Lap data imported successfully!");
     }
+
+    @GetMapping("/meetings")
+    public ResponseEntity<String> importMeetings(){
+        List<MeetingDTO> meetings = openF1Client.fetchMeetings();
+        dataService.addMeetingData(meetings);
+        return ResponseEntity.ok("Meeting data imported successfully!");
+    }
+
+    @GetMapping("/positions")
+    public ResponseEntity<String> importPositions(){
+        List<Session> sessions = sessionRepository.findAll();
+        for(Session session: sessions){
+            List<PositionDTO> positions = openF1Client.fetchPositions(session.getSessionKey());
+            dataService.addPositionData(positions);
+        }
+        return ResponseEntity.ok("Position data imported successfully!");
+    }
+
 }
