@@ -156,6 +156,8 @@ public class DataService {
         return session;
     }
 
+    // The reason behind splitting the results with a qualifying duration is because during qualifying we get a list of durations and gapToLeaders.
+    // So we connect results with a qualifying duration.
     private Result getResult(ResultDTO resultDTO){
         System.out.println("Driver number: " + resultDTO.getDriverNumber());
         Driver driver = driverRepository.findByDriverNumber(resultDTO.getDriverNumber());

@@ -32,3 +32,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# =========================
+# Python / Jupyter
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+env/
+.venv/
+.ipynb_checkpoints/
+*.log
